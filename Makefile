@@ -1,6 +1,6 @@
 # Setup dependencies (installing required packages)
 setup:
-	pip install -r Lyrics_Emotion_Classification/requirements.txt
+	pip install -r requirements.txt
 
 # Format the code with black
 format:

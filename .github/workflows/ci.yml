@@ -1,0 +1,59 @@
+name: Simple CI
+
+on:
+  push:
+    branches:
+      - main  # Trigger the workflow when code is pushed to the 'main' branch
+  pull_request:
+    branches:
+      - main  # Also trigger the workflow for PRs targeting 'main'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Step 2: Set up Python
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.12"
+
+      # Step 3: Cache pip dependencies
+      - name: Cache pip dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('Lyrics_Emotion_Classification/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      # Step 4: Install dependencies
+      - name: Install dependencies
+        run: |
+          pip install black isort flake8  # Explicitly install missing tools
+          make setup  # Run setup to install projects requirements        
+
+      # Step 5: Verify installed packages
+      - name: Check installed dependencies
+        run: |
+          python -m black --version
+          python -m isort --version
+          python -m flake8 --version
+
+      # Step 6: Format code
+      - name: Format code
+        run: make format
+
+      # Step 7: Lint code
+      - name: Lint code
+        run: make lint
+        continue-on-error: true  # Allow CI to continue even if linting fails
+
+      # Placeholder Step: Add tests when available
+      - name: Placeholder for Tests
+        run: echo "No tests currently available. Add tests in the future."
